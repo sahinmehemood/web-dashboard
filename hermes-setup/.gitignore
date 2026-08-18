@@ -1,0 +1,11 @@
+# Hermes Setup — Ignore list
+*.log
+*.bak
+.env
+*.key
+*.pem
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
