@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Activity,
@@ -53,6 +54,24 @@ export default function OverviewPage() {
 
   const memPct = pctUsed(telemetry.memUsedMb, telemetry.memTotalMb);
   const storPct = pctUsed(telemetry.storageUsedGb, telemetry.storageTotalGb);
+
+  const hist = useMemo(
+    () => ({
+      battery: makeHistory(7, 24, telemetry.batteryPercent, 3),
+      cpu: makeHistory(3, 24, telemetry.cpuUsagePercent, 6),
+      mem: makeHistory(11, 24, memPct, 4),
+      stor: makeHistory(17, 24, storPct, 1.5),
+    }),
+    [telemetry.batteryPercent, telemetry.cpuUsagePercent, memPct, storPct],
+  );
+
+  const deltaOf = (series: number[]) => {
+    if (series.length < 8) return 0;
+    const prev = series[series.length - 8];
+    const last = series[series.length - 1];
+    if (!prev) return 0;
+    return ((last - prev) / prev) * 100;
+  };
   const upSvc = crown.services.filter((s) => s.status === "run").length;
   const healthyProviders = providers.filter((p) =>
     p.models.every((m) => m.status === "healthy"),
@@ -203,7 +222,8 @@ export default function OverviewPage() {
           sub={telemetry.batteryStatus}
           tone="success"
           progress={telemetry.batteryPercent}
-          chart={<MetricChart data={makeHistory(7, 24, telemetry.batteryPercent, 3)} tone="success" />}
+          delta={{ value: deltaOf(hist.battery) }}
+          chart={<MetricChart data={hist.battery} tone="success" />}
         />
         <StatCard
           icon={Cpu}
@@ -212,7 +232,8 @@ export default function OverviewPage() {
           sub={`${telemetry.cpuCores} cores · load ${telemetry.loadAvg1}`}
           tone="info"
           progress={telemetry.cpuUsagePercent}
-          chart={<MetricChart data={makeHistory(3, 24, telemetry.cpuUsagePercent, 6)} tone="info" />}
+          delta={{ value: deltaOf(hist.cpu) }}
+          chart={<MetricChart data={hist.cpu} tone="info" />}
         />
         <StatCard
           icon={Activity}
@@ -221,7 +242,8 @@ export default function OverviewPage() {
           sub={`${formatMb(telemetry.memUsedMb)} / ${formatMb(telemetry.memTotalMb)}`}
           tone="info"
           progress={memPct}
-          chart={<MetricChart data={makeHistory(11, 24, memPct, 4)} tone="info" />}
+          delta={{ value: deltaOf(hist.mem) }}
+          chart={<MetricChart data={hist.mem} tone="info" />}
         />
         <StatCard
           icon={HardDrive}
@@ -230,7 +252,8 @@ export default function OverviewPage() {
           sub={`${formatGb(telemetry.storageUsedGb)} / ${formatGb(telemetry.storageTotalGb)}`}
           tone="warning"
           progress={storPct}
-          chart={<MetricChart data={makeHistory(17, 24, storPct, 1.5)} tone="warning" />}
+          delta={{ value: deltaOf(hist.stor) }}
+          chart={<MetricChart data={hist.stor} tone="warning" />}
         />
         <StatCard
           icon={Clock}

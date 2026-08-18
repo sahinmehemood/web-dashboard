@@ -1,3 +1,4 @@
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
@@ -12,6 +13,7 @@ export function StatCard({
   tone = "neutral",
   progress,
   chart,
+  delta,
   className,
 }: {
   icon: LucideIcon;
@@ -21,8 +23,15 @@ export function StatCard({
   tone?: Tone;
   progress?: number;
   chart?: ReactNode;
+  delta?: { value: number; label?: string };
   className?: string;
 }) {
+  const deltaTone: Tone =
+    delta == null || delta.value === 0
+      ? "neutral"
+      : delta.value > 0
+        ? "success"
+        : "danger";
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -46,8 +55,26 @@ export function StatCard({
           {label}
         </span>
       </div>
-      <div className="mt-3 text-2xl font-bold tracking-tight tabular-nums">
-        {value}
+      <div className="mt-3 flex items-baseline gap-2">
+        <span className="text-2xl font-bold tracking-tight tabular-nums">
+          {value}
+        </span>
+        {delta != null && (
+          <span
+            className={cn(
+              "inline-flex items-center gap-0.5 text-[11px] font-medium tabular-nums",
+              toneText[deltaTone],
+            )}
+          >
+            {delta.value > 0 ? (
+              <ArrowUpRight className="size-3" />
+            ) : delta.value < 0 ? (
+              <ArrowDownRight className="size-3" />
+            ) : null}
+            {delta.value > 0 ? "+" : ""}
+            {delta.value.toFixed(1)}%
+          </span>
+        )}
       </div>
       {sub && (
         <div className="mt-0.5 truncate text-xs text-muted-foreground">{sub}</div>

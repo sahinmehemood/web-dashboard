@@ -203,6 +203,7 @@ export default function CronsPage() {
                 {count} of {total} jobs
               </span>
             )}
+            pagination={{ enabled: true, defaultPageSize: 10, pageSizeOptions: [10, 25, 50] }}
           />
         </CardContent>
       </Card>

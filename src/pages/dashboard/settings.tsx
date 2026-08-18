@@ -27,7 +27,7 @@ import {
   useProviders,
   useTelemetry,
 } from "@/hooks/use-dashboard";
-import { useSettings, type Density } from "@/hooks/use-settings";
+import { useSettings, type Density, type Radius } from "@/hooks/use-settings";
 import { APP_VERSION, DDEV } from "@/lib/demo";
 import { formatDate } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
@@ -41,8 +41,10 @@ const REFRESH_OPTIONS: Array<{ value: number; label: string }> = [
 
 const KEYBOARD_ROWS = [
   { label: "Open command center", shortcut: "⌘K" },
+  { label: "Keyboard shortcuts", shortcut: "?" },
+  { label: "Toggle theme", shortcut: "⌘T" },
   { label: "Close command center", shortcut: "Esc" },
-  { label: "Toggle theme", shortcut: "via command center" },
+  { label: "Go to page (g then key)", shortcut: "g h" },
 ];
 
 function SourceBadge({ demo }: { demo: boolean }) {
@@ -66,9 +68,11 @@ export default function SettingsPage() {
     density,
     refreshSeconds,
     autoRefresh,
+    radius,
     setDensity,
     setRefreshSeconds,
     setAutoRefresh,
+    setRadius,
   } = useSettings();
   const { user } = useAuth();
   const telemetry = useTelemetry();
@@ -154,6 +158,34 @@ export default function SettingsPage() {
                   </span>
                 </div>
               </div>
+            </RadioGroup>
+          </div>
+
+          <div className="space-y-3">
+            <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
+              Corner radius
+            </span>
+            <RadioGroup
+              value={radius}
+              onValueChange={(value) => setRadius(value as Radius)}
+              className="flex flex-wrap gap-3"
+            >
+              {(
+                [
+                  { value: "none", label: "Sharp", cls: "rounded-none" },
+                  { value: "sm", label: "Subtle", cls: "rounded-sm" },
+                  { value: "md", label: "Default", cls: "rounded-md" },
+                  { value: "lg", label: "Rounded", cls: "rounded-xl" },
+                ] as const
+              ).map((opt) => (
+                <div key={opt.value} className="flex items-center gap-2">
+                  <RadioGroupItem value={opt.value} id={`radius-${opt.value}`} className="mt-0.5" />
+                  <Label htmlFor={`radius-${opt.value}`} className="capitalize">
+                    <span className={cn("inline-block size-4 bg-foreground", opt.cls)} />
+                    <span className="ml-1.5">{opt.label}</span>
+                  </Label>
+                </div>
+              ))}
             </RadioGroup>
           </div>
         </CardContent>

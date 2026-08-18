@@ -18,6 +18,16 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 export interface DataTableColumn<T> {
@@ -41,6 +51,12 @@ interface DataTableProps<T> {
   initialSortKey?: string;
   initialSortDir?: "asc" | "desc";
   footerCount?: (count: number, total: number) => ReactNode;
+  pagination?: {
+    enabled: boolean;
+    defaultPageSize?: number;
+    pageSizeOptions?: number[];
+    showPageSizeSelector?: boolean;
+  };
 }
 
 type SortDir = "asc" | "desc";
@@ -63,10 +79,13 @@ export function DataTable<T>({
   initialSortKey,
   initialSortDir = "asc",
   footerCount,
+  pagination,
 }: DataTableProps<T>) {
   const [query, setQuery] = useState("");
   const [sortKey, setSortKey] = useState<string | undefined>(initialSortKey);
   const [sortDir, setSortDir] = useState<SortDir>(initialSortDir);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(pagination?.defaultPageSize ?? 10);
 
   const filtered = useMemo(() => {
     if (!query.trim() || searchKeys.length === 0) return data;
@@ -103,6 +122,69 @@ export function DataTable<T>({
       setSortDir("asc");
     }
   };
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+
+  const paginated = useMemo(() => {
+    if (!pagination?.enabled) return sorted;
+    const start = (safePage - 1) * pageSize;
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, pagination?.enabled, safePage, pageSize]);
+
+  if (pagination?.enabled && sorted.length === 0 && query.trim()) {
+    return (
+      <div className="w-full">
+        <div className="flex flex-col gap-2 border-b border-border p-3 sm:flex-row sm:items-center sm:justify-between">
+          {searchKeys.length > 0 ? (
+            <div className="relative w-full sm:max-w-xs">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={searchPlaceholder}
+                className="h-8 pl-8 text-xs"
+              />
+            </div>
+          ) : (
+            <span />
+          )}
+          {toolbar && <div className="flex items-center gap-2">{toolbar}</div>}
+        </div>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={columns.length} className="p-0">
+                  <Empty>
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <Search className="size-5" />
+                      </EmptyMedia>
+                      <EmptyTitle>{emptyTitle}</EmptyTitle>
+                      <EmptyDescription>{emptyDescription}</EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setQuery("");
+                          setSortKey(undefined);
+                        }}
+                      >
+                        Clear search
+                      </Button>
+                    </EmptyContent>
+                  </Empty>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -165,7 +247,7 @@ export function DataTable<T>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sorted.length === 0 ? (
+            {paginated.length === 0 && !query.trim() ? (
               <TableRow>
                 <TableCell colSpan={columns.length} className="p-0">
                   <Empty>
@@ -192,7 +274,7 @@ export function DataTable<T>({
                 </TableCell>
               </TableRow>
             ) : (
-              sorted.map((row, i) => (
+              paginated.map((row, i) => (
                 <TableRow key={i}>
                   {columns.map((col) => (
                     <TableCell key={col.key} className={col.className}>
@@ -206,9 +288,89 @@ export function DataTable<T>({
         </Table>
       </div>
 
+      {pagination?.enabled && sorted.length > 0 && (
+        <div className="flex flex-col gap-3 border-t border-border p-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">
+              Showing {(safePage - 1) * pageSize + 1} to {Math.min(safePage * pageSize, sorted.length)} of {sorted.length}
+            </span>
+            {pagination.showPageSizeSelector !== false && (
+              <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
+                <SelectTrigger className="w-[110px] h-8 text-xs">
+                  <SelectValue placeholder="Page size" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(pagination.pageSizeOptions ?? [10, 25, 50, 100]).map((size) => (
+                    <SelectItem key={size} value={String(size)}>
+                      {size} per page
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  aria-disabled={safePage === 1}
+                  className={safePage === 1 ? "pointer-events-none opacity-40" : ""}
+                  onClick={(e) => { e.preventDefault(); setPage((p) => Math.max(1, p - 1)); }}
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
+                if (totalPages <= 7) {
+                  return (
+                    <PaginationItem key={p}>
+                      <PaginationLink
+                        href="#"
+                        isActive={safePage === p}
+                        onClick={(e) => { e.preventDefault(); setPage(p); }}
+                      >
+                        {p}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                if (p === 1 || p === totalPages || (p >= safePage - 1 && p <= safePage + 1)) {
+                  return (
+                    <PaginationItem key={p}>
+                      <PaginationLink
+                        href="#"
+                        isActive={safePage === p}
+                        onClick={(e) => { e.preventDefault(); setPage(p); }}
+                      >
+                        {p}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                }
+                if (p === safePage - 2 || p === safePage + 2) {
+                  return (
+                    <PaginationItem key={p}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+                return null;
+              })}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  aria-disabled={safePage === totalPages}
+                  className={safePage === totalPages ? "pointer-events-none opacity-40" : ""}
+                  onClick={(e) => { e.preventDefault(); setPage((p) => Math.min(totalPages, p + 1)); }}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
+
       {footerCount && (
         <div className="border-t border-border px-4 py-2.5 text-right">
-          {footerCount(sorted.length, data.length)}
+          {footerCount(paginated.length, data.length)}
         </div>
       )}
     </div>
