@@ -168,7 +168,7 @@ export default function CrownPage() {
                 ),
               },
               {
-                key: "name",
+                key: "description",
                 header: "Description",
                 headerClassName: "hidden lg:table-cell",
                 className: "hidden text-xs text-muted-foreground lg:table-cell",

@@ -1,6 +1,6 @@
 import { useId } from "react";
 import { cn } from "@/lib/utils";
-import { toneBar, type Tone } from "@/lib/status";
+import { toneText, type Tone } from "@/lib/status";
 
 function buildPaths(data: number[], width: number, height: number) {
   const max = Math.max(...data);
@@ -39,7 +39,7 @@ export function MetricChart({
     );
   }
   const { line, area, last } = buildPaths(data, width, height);
-  const stroke = toneBar[tone];
+  const stroke = toneText[tone];
 
   return (
     <svg
@@ -55,7 +55,7 @@ export function MetricChart({
           <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={area} fill={`url(#${gid})`} className={cn(stroke, "text-muted-foreground")} />
+      <path d={area} fill={`url(#${gid})`} className={stroke} />
       <path
         d={line}
         fill="none"
@@ -63,14 +63,15 @@ export function MetricChart({
         strokeLinecap="round"
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
-        className={cn(stroke, "text-muted-foreground")}
+        className={stroke}
       />
       <circle
         cx={last.x}
         cy={last.y}
         r="2.5"
+        fill="currentColor"
         vectorEffect="non-scaling-stroke"
-        className={cn(stroke, "text-muted-foreground")}
+        className={stroke}
       />
     </svg>
   );
