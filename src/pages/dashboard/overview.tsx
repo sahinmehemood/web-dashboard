@@ -28,7 +28,11 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { AnimatedCounter } from "@/components/dashboard/animated-counter";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { MetricChart } from "@/components/dashboard/metric-chart";
+import { ProgressRing } from "@/components/dashboard/progress-ring";
+import { SystemTopology } from "@/components/dashboard/system-topology";
+import { DeploymentPipeline } from "@/components/dashboard/deployment-pipeline";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
+import { Feature, useFeatureFlags } from "@/components/dashboard/feature-flags";
 import { useCommandPanel } from "@/components/dashboard/command-panel";
 import {
   useActivity,
@@ -245,7 +249,12 @@ export default function OverviewPage() {
           progress={telemetry.batteryPercent}
           delta={{ value: deltaOf(hist.battery) }}
           chart={<MetricChart data={hist.battery} tone="success" />}
-        />
+          className="relative"
+        >
+          <Feature name="progressRings">
+            <ProgressRing value={telemetry.batteryPercent} size={40} strokeWidth={4} className="absolute top-3 right-3" />
+          </Feature>
+        </StatCard>
         <StatCard
           icon={Cpu}
           label="CPU"
@@ -255,7 +264,12 @@ export default function OverviewPage() {
           progress={telemetry.cpuUsagePercent}
           delta={{ value: deltaOf(hist.cpu) }}
           chart={<MetricChart data={hist.cpu} tone="info" />}
-        />
+          className="relative"
+        >
+          <Feature name="progressRings">
+            <ProgressRing value={telemetry.cpuUsagePercent} size={40} strokeWidth={4} className="absolute top-3 right-3" />
+          </Feature>
+        </StatCard>
         <StatCard
           icon={Activity}
           label="Memory"
@@ -265,7 +279,12 @@ export default function OverviewPage() {
           progress={memPct}
           delta={{ value: deltaOf(hist.mem) }}
           chart={<MetricChart data={hist.mem} tone="info" />}
-        />
+          className="relative"
+        >
+          <Feature name="progressRings">
+            <ProgressRing value={memPct} size={40} strokeWidth={4} className="absolute top-3 right-3" />
+          </Feature>
+        </StatCard>
         <StatCard
           icon={HardDrive}
           label="Storage"
@@ -275,7 +294,12 @@ export default function OverviewPage() {
           progress={storPct}
           delta={{ value: deltaOf(hist.stor) }}
           chart={<MetricChart data={hist.stor} tone="warning" />}
-        />
+          className="relative"
+        >
+          <Feature name="progressRings">
+            <ProgressRing value={storPct} size={40} strokeWidth={4} className="absolute top-3 right-3" />
+          </Feature>
+        </StatCard>
         <StatCard
           icon={Clock}
           label="Uptime"
@@ -291,6 +315,26 @@ export default function OverviewPage() {
           tone={telemetry.networkOnline ? "success" : "danger"}
         />
       </div>
+
+      {/* System topology */}
+      <Feature name="topologyMap">
+        <SystemTopology services={crown.services} />
+      </Feature>
+
+      {/* Deployment pipeline */}
+      <Feature name="deploymentPipeline">
+        <DeploymentPipeline
+          title="Latest deployment"
+          environment="Termux / gh-pages"
+          steps={[
+            { id: "build", name: "Build", status: "completed", duration: "14s" },
+            { id: "test", name: "Test", status: "completed", duration: "3s" },
+            { id: "lint", name: "Lint", status: "completed", duration: "1s" },
+            { id: "sync", name: "Sync", status: "completed", duration: "2s" },
+            { id: "deploy", name: "Deploy", status: "completed", duration: "4s" },
+          ]}
+        />
+      </Feature>
 
       {/* Summary columns */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

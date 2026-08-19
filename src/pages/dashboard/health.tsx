@@ -23,6 +23,8 @@ import { BadgeDot, toneBg, toneForStatus, type Tone } from "@/lib/status";
 import { CodeBlock } from "@/components/dashboard/code-block";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { SystemTopology } from "@/components/dashboard/system-topology";
+import { Feature } from "@/components/dashboard/feature-flags";
 import {
   useActivity,
   useCrons,
@@ -531,6 +533,11 @@ export default function HealthPage() {
           })}
         </CardContent>
       </Card>
+
+      {/* System topology map */}
+      <Feature name="topologyMap">
+        <SystemTopology services={crown.services} />
+      </Feature>
 
       {/* Service detail cards */}
       <Card>

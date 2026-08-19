@@ -15,6 +15,7 @@ export function StatCard({
   chart,
   delta,
   className,
+  children,
 }: {
   icon: LucideIcon;
   label: string;
@@ -25,6 +26,7 @@ export function StatCard({
   chart?: ReactNode;
   delta?: { value: number; label?: string };
   className?: string;
+  children?: ReactNode;
 }) {
   const deltaTone: Tone =
     delta == null || delta.value === 0
@@ -93,6 +95,7 @@ export function StatCard({
         </div>
       )}
       {chart && <div className="mt-3">{chart}</div>}
+      {children}
     </motion.div>
   );
 }

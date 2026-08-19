@@ -3,10 +3,11 @@ import { Toaster } from "@/components/ui/sonner";
 import { RequireAuth } from "@/components/RequireAuth";
 import { VlyToolbar } from "../vly-toolbar-readonly.tsx";
 import { ThemeProvider } from "@/components/theme-provider";
+import { FeatureFlagProvider } from "@/components/dashboard/feature-flags";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
 import { Loader2 } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import React, { StrictMode, useEffect, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
@@ -180,15 +181,19 @@ createRoot(document.getElementById("root")!).render(
         <VlyToolbar />
       </ToolbarErrorBoundary>
       <ThemeProvider>
-        <ConvexAuthProvider client={convex}>
-          <BrowserRouter>
-            <RouteSyncer />
-            <Suspense fallback={<RouteLoading />}>
-              <AnimatedRoutes />
-            </Suspense>
-          </BrowserRouter>
-          <Toaster />
-        </ConvexAuthProvider>
+        <FeatureFlagProvider>
+          <MotionConfig reducedMotion="user">
+            <ConvexAuthProvider client={convex}>
+              <BrowserRouter>
+                <RouteSyncer />
+                <Suspense fallback={<RouteLoading />}>
+                  <AnimatedRoutes />
+                </Suspense>
+              </BrowserRouter>
+              <Toaster />
+            </ConvexAuthProvider>
+          </MotionConfig>
+        </FeatureFlagProvider>
       </ThemeProvider>
     </RootErrorBoundary>
   </StrictMode>,
