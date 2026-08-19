@@ -9,7 +9,8 @@ export function CodeBlock({
 }) {
   return (
     <pre
-      role="code"
+      role="region"
+      aria-label="Code block"
       tabIndex={0}
       className={cn(
         "overflow-x-auto rounded-lg border border-border bg-secondary/60 p-4 font-mono text-xs leading-relaxed text-muted-foreground outline-none focus:ring-1 focus:ring-ring",

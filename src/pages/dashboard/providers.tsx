@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, Zap } from "lucide-react";
+import { AlertTriangle, Search, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BadgeDot, type Tone } from "@/lib/status";
 import { Badge } from "@/components/ui/badge";
@@ -166,8 +166,9 @@ export default function ProvidersPage() {
                     );
                   })}
                   {p.failureReason && (
-                    <p className="pt-1 text-[11px] text-amber-600 dark:text-amber-400">
-                      ⚠ {p.failureReason.replace(/_/g, " ")}
+                    <p className="flex items-center gap-1 pt-1 text-[11px] text-amber-600 dark:text-amber-400">
+                      <AlertTriangle className="size-3" />
+                      {p.failureReason.replace(/_/g, " ")}
                     </p>
                   )}
                   <MetricChart

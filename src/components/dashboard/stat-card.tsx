@@ -38,7 +38,7 @@ export function StatCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] as const }}
       className={cn(
-        "group flex flex-col rounded-xl border border-border bg-card p-4",
+        "group flex flex-col rounded-xl border border-border bg-card p-4 shadow-xs transition-shadow hover:shadow-sm",
         className,
       )}
     >

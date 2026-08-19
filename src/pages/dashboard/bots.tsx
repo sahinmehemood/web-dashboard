@@ -13,6 +13,7 @@ import { DataTable } from "@/components/dashboard/data-table";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { useBots, useSendCommand } from "@/hooks/use-dashboard";
+import { useNow } from "@/hooks/use-settings";
 import { DID } from "@/lib/demo";
 import { timeAgo } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
@@ -30,7 +31,7 @@ export default function BotsPage() {
   const { data: bots } = useBots();
   const send = useSendCommand();
   const [roleFilter, setRoleFilter] = useState("all");
-  const now = Date.now();
+  const now = useNow(15000);
 
   const filtered = useMemo(() => {
     if (roleFilter === "all") return bots;
@@ -122,7 +123,7 @@ export default function BotsPage() {
                 {ROLE_FILTERS.map((f) => (
                   <button
                     key={f.value}
-                    onClick={() => setRoleFilter(f.value)}
+                    onClick={() => setRoleFilter(f.value)} aria-pressed={roleFilter === f.value}
                     className={cn(
                       "cursor-pointer rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
                       roleFilter === f.value

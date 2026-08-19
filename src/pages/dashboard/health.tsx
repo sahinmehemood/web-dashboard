@@ -172,7 +172,7 @@ export default function HealthPage() {
       {
         id: "errors",
         label: "Errors (24h)",
-        status: recentErrors > 5 ? ("warn" as const) : recentErrors > 0 ? ("warn" as const) : ("ok" as const),
+        status: recentErrors > 5 ? ("fail" as const) : recentErrors > 0 ? ("warn" as const) : ("ok" as const),
         value: `${recentErrors} error${recentErrors === 1 ? "" : "s"}`,
         detail: recentErrors === 0 ? "No recorded errors" : "Some events need review",
       },
@@ -552,6 +552,7 @@ export default function HealthPage() {
                 <button
                   type="button"
                   onClick={() => setExpandedService(isExpanded ? null : s.name)}
+                  aria-expanded={isExpanded}
                   className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-muted/40 cursor-pointer"
                 >
                   <BadgeDot tone={tone} pulse={s.status === "run"} />

@@ -15,6 +15,7 @@ import { MetricChart } from "@/components/dashboard/metric-chart";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { useAgents, useSendCommand } from "@/hooks/use-dashboard";
+import { useNow } from "@/hooks/use-settings";
 import { DID } from "@/lib/demo";
 import { makeHistory } from "@/lib/history";
 import { formatUptime, timeAgo } from "@/lib/formatters";
@@ -149,7 +150,7 @@ export default function AgentsPage() {
   const { data: agents } = useAgents();
   const send = useSendCommand();
   const [stateFilter, setStateFilter] = useState("all");
-  const now = Date.now();
+  const now = useNow(15000);
 
   const filtered = useMemo(() => {
     if (stateFilter === "all") return agents;
@@ -210,7 +211,7 @@ export default function AgentsPage() {
         {STATE_FILTERS.map((f) => (
           <button
             key={f.value}
-            onClick={() => setStateFilter(f.value)}
+            onClick={() => setStateFilter(f.value)} aria-pressed={stateFilter === f.value}
             className={cn(
               "cursor-pointer rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
               stateFilter === f.value

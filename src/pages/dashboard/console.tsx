@@ -133,7 +133,7 @@ export default function ConsolePage() {
         <CardContent className="space-y-4">
           <div
             ref={scrollRef}
-            className="max-h-[420px] overflow-y-auto rounded-lg border border-border bg-secondary/40 p-4 font-mono text-xs leading-relaxed"
+            className="max-h-[420px] overflow-y-auto rounded-lg border border-border bg-muted/50 p-4 font-mono text-xs leading-relaxed"
           >
             {lines.length === 0 ? (
               <div className="flex min-h-[220px] items-center justify-center text-center text-muted-foreground">

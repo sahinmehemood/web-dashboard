@@ -111,7 +111,7 @@ export default function BrainPage() {
                     <span className="text-muted-foreground">{d.label}</span>
                     <span className="font-medium tabular-nums">{d.value}%</span>
                   </div>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
+                  <div className="h-2 overflow-hidden rounded-full bg-secondary">
                     <div
                       className={cn("h-full rounded-full transition-all duration-700", d.color)}
                       style={{ width: `${d.value}%` }}

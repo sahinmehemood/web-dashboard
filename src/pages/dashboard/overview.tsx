@@ -214,7 +214,7 @@ export default function OverviewPage() {
       </div>
 
       {/* Metric cards with sparklines */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
         <StatCard
           icon={Battery}
           label="Battery"
@@ -284,6 +284,9 @@ export default function OverviewPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-1">
+            {crown.services.length === 0 && (
+              <p className="py-4 text-center text-sm text-muted-foreground">No services running.</p>
+            )}
             {crown.services.map((s) => (
               <div
                 key={s.name}
@@ -324,6 +327,9 @@ export default function OverviewPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
+            {providers.length === 0 && (
+              <p className="py-4 text-center text-sm text-muted-foreground">No providers configured.</p>
+            )}
             {providers.slice(0, 6).map((p) => {
               const healthy = p.models.every((m) => m.status === "healthy");
               return (
@@ -426,6 +432,9 @@ export default function OverviewPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
+            {bots.length === 0 && (
+              <p className="py-4 text-center text-sm text-muted-foreground">No bots configured.</p>
+            )}
             {bots.map((b) => (
               <div
                 key={b.botId}
