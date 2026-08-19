@@ -1,1 +1,0 @@
-import{j as e}from"./framer-motion-ZhMQL9nK.js";import{c as t}from"./utils-DanhxYoJ.js";function s({text:o,className:r}){return e.jsx("pre",{className:t("overflow-x-auto rounded-lg border border-border bg-secondary/60 p-4 font-mono text-xs leading-relaxed text-muted-foreground",r),children:o})}export{s as C};
