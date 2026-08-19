@@ -10,6 +10,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { useAuth } from "@/hooks/use-auth";
+import { DEMO_MODE } from "@/lib/env";
 import logo from "@/assets/logo.svg";
 
 interface AuthProps {
@@ -38,6 +39,12 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (DEMO_MODE) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {

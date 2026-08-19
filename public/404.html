@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hermes Command Dashboard</title>
+    <script>
+      // GitHub Pages SPA fallback: redirect unknown paths to the app root.
+      // The app's client-side router takes over from there.
+      (function () {
+        var base = "/web-dashboard/";
+        var path = window.location.pathname;
+        if (path.indexOf(base) === 0) path = path.slice(base.length);
+        window.location.replace(base + (path && path !== "" ? "#" + path : ""));
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Redirecting…</p>
+  </body>
+</html>

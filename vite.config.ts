@@ -6,6 +6,8 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Relative-safe base for GitHub Pages deployment under /<repo>/.
+  base: process.env.VITE_BASE ?? "/web-dashboard/",
   plugins: [react(), vlyPlugin(), tailwindcss()],
   resolve: {
     alias: {
