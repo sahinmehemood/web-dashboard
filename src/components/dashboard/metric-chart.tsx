@@ -55,10 +55,11 @@ export function MetricChart({
           <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={area} fill={`url(#${gid})`} className={stroke} />
+      <path d={area} fill={`url(#${gid})`} className={stroke} opacity="0.8" />
       <path
         d={line}
         fill="none"
+        stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -70,6 +71,8 @@ export function MetricChart({
         cy={last.y}
         r="2.5"
         fill="currentColor"
+        stroke="currentColor"
+        strokeWidth="1"
         vectorEffect="non-scaling-stroke"
         className={stroke}
       />

@@ -84,9 +84,9 @@ export function AppShell() {
           </Sidebar>
           <SidebarInset>
             <DashboardHeader />
-            <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-8 md:px-6 lg:px-8">
+            <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-8 md:px-6 lg:px-8">
               <Outlet />
-            </main>
+            </div>
           </SidebarInset>
         </ShortcutsDialogProvider>
       </CommandPanelProvider>

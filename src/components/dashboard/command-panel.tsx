@@ -43,6 +43,10 @@ import { useSendCommand } from "@/hooks/use-dashboard";
 import { useTheme } from "@/components/theme-provider";
 import { DID } from "@/lib/demo";
 
+const isMac =
+  typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+const modKey = isMac ? "⌘" : "Ctrl";
+
 interface CommandPanelContextValue {
   open: () => void;
 }
@@ -129,8 +133,9 @@ function CommandPanel({
           deviceId: DID,
           commandType: type,
         });
+        const label = type.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
         toast.success("Command sent", {
-          description: `${type.replace(/_/g, " ")} dispatched to device.`,
+          description: `${label} dispatched to device.`,
         });
         onOpenChange(false);
       } catch (error) {
@@ -196,7 +201,7 @@ function CommandPanel({
           <CommandItem onSelect={() => { toggleTheme(); onOpenChange(false); }}>
             {theme === "dark" ? <Sun className="size-4 text-muted-foreground" /> : <Moon className="size-4 text-muted-foreground" />}
             <span>Switch to {theme === "dark" ? "light" : "dark"}</span>
-            <CommandShortcut>⌘T</CommandShortcut>
+            <CommandShortcut>{modKey}T</CommandShortcut>
           </CommandItem>
           <CommandItem onSelect={() => go("/dashboard/settings")}>
             <Settings className="size-4 text-muted-foreground" />

@@ -223,6 +223,7 @@ export function DataTable<T>({
                     <button
                       type="button"
                       onClick={() => toggleSort(col)}
+                      aria-sort={sortKey === col.key ? (sortDir === "asc" ? "ascending" : "descending") : "none"}
                       className={cn(
                         "inline-flex cursor-pointer items-center gap-1 font-medium uppercase tracking-wide text-[11px] hover:text-foreground transition-colors",
                         sortKey === col.key && "text-foreground",

@@ -18,29 +18,31 @@ export function useShortcutsDialog() {
   return useContext(ShortcutsContext);
 }
 
+const isMac =
+  typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+
 const GROUPS: { title: string; items: { label: string; keys: string[] }[] }[] = [
   {
     title: "Global",
     items: [
-      { label: "Open command center", keys: ["⌘", "K"] },
+      { label: "Open command center", keys: [isMac ? "⌘" : "Ctrl", "K"] },
       { label: "Show this dialog", keys: ["?"] },
-      { label: "Toggle theme", keys: ["⌘", "T"] },
-    ],
-  },
-  {
-    title: "Command center",
-    items: [
-      { label: "Close", keys: ["Esc"] },
-      { label: "Jump to page 1-9", keys: ["1", "…", "9"] },
+      { label: "Toggle theme", keys: [isMac ? "⌘" : "Ctrl", "T"] },
     ],
   },
   {
     title: "Navigation",
     items: [
-      { label: "Jump to page", keys: ["1", "…", "0"] },
+      { label: "Jump to page 1-0", keys: ["1", "…", "0"] },
       { label: "Overview", keys: ["G", "O"] },
-      { label: "Health", keys: ["G", "H"] },
+      { label: "Crown", keys: ["G", "C"] },
+      { label: "Providers", keys: ["G", "P"] },
+      { label: "Crons", keys: ["G", "R"] },
       { label: "Activity", keys: ["G", "A"] },
+      { label: "Brain", keys: ["G", "B"] },
+      { label: "Console", keys: ["G", "N"] },
+      { label: "Bots", keys: ["G", "T"] },
+      { label: "Health", keys: ["G", "H"] },
       { label: "Settings", keys: ["G", "S"] },
     ],
   },

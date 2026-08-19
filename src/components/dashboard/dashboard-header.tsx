@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -26,6 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/hooks/use-auth";
+import { toneBg, toneText } from "@/lib/status";
 import { useNow } from "@/hooks/use-settings";
 import { useActivity, useTelemetry } from "@/hooks/use-dashboard";
 import { useCommandPanel } from "@/components/dashboard/command-panel";
@@ -39,6 +40,7 @@ import {
   LogOut,
   Moon,
   Search,
+  Settings,
   Sun,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -90,7 +92,7 @@ function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => navigate("/dashboard/settings")}>
-          <Home className="size-4" />
+          <Settings className="size-4" />
           Settings
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate("/")}>
@@ -134,7 +136,7 @@ function Notifications() {
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <span className="text-sm font-medium">Notifications</span>
           {alerts.length > 0 && (
-            <Badge variant="outline" className="text-[10px] font-medium text-red-600 dark:text-red-400">
+            <Badge variant="outline" className={cn("text-[10px] font-medium", toneText.danger)}>
               {alerts.length} alert{alerts.length > 1 ? "s" : ""}
             </Badge>
           )}
@@ -159,14 +161,14 @@ function Notifications() {
 function DataSourceBadge() {
   const t = useTelemetry();
   const demo = isAnyDemo([t.isDemo]);
+  const tone = demo ? "warning" : "success";
   return (
     <Badge
       variant="outline"
       className={cn(
         "hidden gap-1.5 text-[10px] font-medium md:inline-flex",
-        demo
-          ? "border-amber-500/30 bg-amber-500/5 text-amber-700 dark:text-amber-400"
-          : "border-emerald-500/30 bg-emerald-500/5 text-emerald-700 dark:text-emerald-400",
+        toneBg[tone],
+        toneText[tone],
       )}
     >
       <span
@@ -184,6 +186,7 @@ export function DashboardHeader() {
   const { theme, toggleTheme } = useTheme();
   const { open: openCommandPanel } = useCommandPanel();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const now = useNow(1000);
   const isDark = theme === "dark";
   const current = TITLES[pathname] ?? "Dashboard";
@@ -199,8 +202,11 @@ export function DashboardHeader() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink
-              href="/"
-              onClick={(event) => event.preventDefault()}
+              href="/dashboard"
+              onClick={(event) => {
+                event.preventDefault();
+                navigate("/dashboard");
+              }}
               className="text-sm font-medium text-muted-foreground"
             >
               hermes
