@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { DID, DA, DAG, DBR, DC, DCR, DP, DBT, DT } from "@/lib/demo";
+import { DID, DA, DAG, DBR, DC, DCR, DP, DBT, DT, DDEV } from "@/lib/demo";
 import type {
   ActivityEvent,
   AgentInstance,
@@ -8,6 +8,7 @@ import type {
   BrainStats,
   CronJob,
   CrownHealth,
+  DeviceIdentity,
   DeviceTelemetry,
   TelegramBot,
 } from "@/lib/demo";
@@ -16,6 +17,14 @@ export function useTelemetry() {
   const live = useQuery(api.dashboard.latestTelemetry, { deviceId: DID });
   return { data: live ?? DT, isDemo: live == null } as {
     data: DeviceTelemetry;
+    isDemo: boolean;
+  };
+}
+
+export function useDeviceIdentity() {
+  const live = useQuery(api.dashboard.deviceIdentity, { deviceId: DID });
+  return { data: live ?? DDEV, isDemo: live == null } as {
+    data: DeviceIdentity;
     isDemo: boolean;
   };
 }
@@ -80,7 +89,16 @@ export function useAgents() {
 }
 
 export function useSendCommand() {
-  return useMutation(api.dashboard.createCommand);
+  const mutation = useMutation(api.dashboard.createCommand);
+  const { isDemo } = useTelemetry();
+
+  return async (args: { deviceId: string; commandType: string; payload?: string }) => {
+    if (isDemo) {
+      // In demo mode, simulate success so the UI doesn't break.
+      return { _demo: true };
+    }
+    return mutation(args);
+  };
 }
 
 export function isAnyDemo(flags: boolean[]): boolean {

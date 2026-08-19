@@ -4,9 +4,7 @@ import {
   Activity,
   AlertTriangle,
   Bot,
-  Clock,
   RefreshCw,
-  Timer,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

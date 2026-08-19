@@ -5,7 +5,6 @@ import {
   Bot,
   Cpu,
   MemoryStick,
-  Power,
   RefreshCw,
   Zap,
 } from "lucide-react";

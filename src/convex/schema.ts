@@ -50,6 +50,20 @@ const schema = defineSchema(
       .index("by_device", ["deviceId", "reportedAt"])
       .index("by_time", ["reportedAt"]),
 
+    // ── Device identity (one doc per device: model, OS, kernel, etc.) ──
+    deviceIdentity: defineTable({
+      deviceId: v.string(),
+      hostname: v.optional(v.string()),
+      os: v.optional(v.string()),
+      arch: v.optional(v.string()),
+      kernel: v.optional(v.string()),
+      termuxVersion: v.optional(v.string()),
+      model: v.optional(v.string()),
+      androidVersion: v.optional(v.string()),
+      version: v.optional(v.string()),
+      installedAt: v.optional(v.number()),
+    }).index("by_device", ["deviceId"]),
+
     // ── Crown health (7 runit services) ────────────────────────────────
     crownHealth: defineTable({
       deviceId: v.string(),

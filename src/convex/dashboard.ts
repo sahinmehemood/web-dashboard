@@ -342,3 +342,40 @@ export const agents = query({
     return null;
   },
 });
+
+// ── Device identity (model, OS, kernel, etc.) ────────────────────────
+export const deviceIdentity = query({
+  args: { deviceId: v.string() },
+  handler: async (ctx, { deviceId }) => {
+    return await ctx.db
+      .query("deviceIdentity")
+      .withIndex("by_device", (q) => q.eq("deviceId", deviceId))
+      .first();
+  },
+});
+
+export const ingestDeviceIdentity = mutation({
+  args: {
+    deviceId: v.string(),
+    hostname: v.optional(v.string()),
+    os: v.optional(v.string()),
+    arch: v.optional(v.string()),
+    kernel: v.optional(v.string()),
+    termuxVersion: v.optional(v.string()),
+    model: v.optional(v.string()),
+    androidVersion: v.optional(v.string()),
+    version: v.optional(v.string()),
+    installedAt: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("deviceIdentity")
+      .withIndex("by_device", (q) => q.eq("deviceId", args.deviceId))
+      .first();
+    if (existing) {
+      await ctx.db.patch(existing._id, args);
+      return existing._id;
+    }
+    return await ctx.db.insert("deviceIdentity", args);
+  },
+});
