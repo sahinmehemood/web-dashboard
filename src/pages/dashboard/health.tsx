@@ -87,7 +87,7 @@ export default function HealthPage() {
 
   const handleRestartService = async (serviceName: string) => {
     try {
-      await send({ deviceId: DID, commandType: "restart_hermes" });
+      await send({ deviceId: DID, commandType: "restart_hermes", payload: `service:${serviceName}` });
       toast.success("Restart dispatched", {
         description: `Restart command sent for ${serviceName}.`,
       });
@@ -657,6 +657,46 @@ export default function HealthPage() {
               </div>
             );
           })}
+        </CardContent>
+      </Card>
+
+      {/* Service dependency map */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+            <Boxes className="size-4 text-muted-foreground" />
+            Service dependencies
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { name: "bot", depends: ["web", "search"], role: "Telegram gateway — needs dashboard web + search" },
+              { name: "bot2", depends: ["web", "search"], role: "Second gateway — same dependencies as bot" },
+              { name: "web", depends: ["proxy"], role: "Dashboard UI — exposed via proxy" },
+              { name: "search", depends: [], role: "SearXNG — standalone search engine" },
+              { name: "tunnel", depends: ["web"], role: "Serveo tunnel — exposes web to internet" },
+              { name: "proxy", depends: ["web"], role: "Dashboard proxy — routes :9120 → :9119" },
+              { name: "scraper", depends: ["search"], role: "Web scraper — uses SearXNG for search" },
+            ].map((svc) => {
+              const svcData = crown.services.find((s) => s.name === svc.name);
+              const tone = svcData ? toneForStatus(svcData.status) : "neutral";
+              return (
+                <div key={svc.name} className="rounded-lg border border-border p-3">
+                  <div className="flex items-center gap-2">
+                    <BadgeDot tone={tone} pulse={svcData?.status === "run"} />
+                    <span className="font-mono text-sm font-medium">{svc.name}</span>
+                    {svc.depends.length > 0 && (
+                      <span className="text-[10px] text-muted-foreground">
+                        → {svc.depends.join(", ")}
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">{svc.role}</p>
+                </div>
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
     </div>

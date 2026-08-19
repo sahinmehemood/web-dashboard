@@ -27,10 +27,6 @@ export function makeHistory(
   return out;
 }
 
-export function smoothStep(x: number): number {
-  return x * x * (3 - 2 * x);
-}
-
 export type UptimeTone = "operational" | "degraded" | "outage";
 
 /**

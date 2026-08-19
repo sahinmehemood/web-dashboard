@@ -38,6 +38,7 @@ import {
   useTelemetry,
 } from "@/hooks/use-dashboard";
 import { DID, DDEV } from "@/lib/demo";
+import { APP_VERSION } from "@/lib/demo";
 import { makeHistory } from "@/lib/history";
 import { formatGb, formatMb, formatUptime, pctUsed } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
@@ -77,7 +78,7 @@ export default function OverviewPage() {
     p.models.every((m) => m.status === "healthy"),
   ).length;
   const healthScore = Math.round(
-    (upSvc / crown.services.length) * 40 +
+    (upSvc / Math.max(1, crown.services.length)) * 40 +
       (healthyProviders / Math.max(1, providers.length)) * 30 +
       (telemetry.networkOnline ? 15 : 0) +
       (telemetry.batteryPercent > 20 ? 15 : 0),
@@ -211,6 +212,25 @@ export default function OverviewPage() {
             {chip.label}: {chip.value}
           </span>
         ))}
+      </div>
+
+      {/* Device identity quick info */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-border bg-card px-4 py-2 text-xs text-muted-foreground shadow-xs">
+        <span className="flex items-center gap-1.5">
+          <Smartphone className="size-3" />
+          <span className="font-medium text-foreground">{DDEV.model}</span>
+        </span>
+        <span className="hidden sm:inline">·</span>
+        <span className="hidden sm:inline">{DDEV.os}</span>
+        <span className="hidden md:inline">·</span>
+        <span className="hidden md:inline font-mono">{DDEV.arch}</span>
+        <span className="hidden lg:inline">·</span>
+        <span className="hidden lg:inline">Kernel {DDEV.kernel.split("-")[0]}</span>
+        <span className="hidden lg:inline">·</span>
+        <span className="hidden lg:inline">Termux {DDEV.termuxVersion}</span>
+        <span className="ml-auto hidden sm:inline">
+          <span className="font-mono text-foreground">v{APP_VERSION}</span>
+        </span>
       </div>
 
       {/* Metric cards with sparklines */}

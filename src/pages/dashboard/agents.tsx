@@ -164,7 +164,7 @@ export default function AgentsPage() {
 
   const handleRestart = async (agentId: string) => {
     try {
-      await send({ deviceId: DID, commandType: "restart_hermes" });
+      await send({ deviceId: DID, commandType: "restart_hermes", payload: agentId });
       toast.success("Restart dispatched", {
         description: `Restart command sent for ${agentId}.`,
       });

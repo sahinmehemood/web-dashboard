@@ -44,7 +44,7 @@ export default function BotsPage() {
 
   const handleRestart = async (username: string) => {
     try {
-      await send({ deviceId: DID, commandType: "restart_hermes" });
+      await send({ deviceId: DID, commandType: "restart_hermes", payload: `bot:${username}` });
       toast.success("Restart dispatched", {
         description: `Restart command sent for @${username}.`,
       });

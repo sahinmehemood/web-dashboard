@@ -27,6 +27,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/hooks/use-auth";
 import { toneBg, toneText } from "@/lib/status";
+import { DEMO_MODE } from "@/lib/env";
 import { useNow } from "@/hooks/use-settings";
 import { useActivity, useTelemetry } from "@/hooks/use-dashboard";
 import { useCommandPanel } from "@/components/dashboard/command-panel";
@@ -171,6 +172,7 @@ function DataSourceBadge() {
         toneBg[tone],
         toneText[tone],
       )}
+      title={demo ? "Running with demo data — set VITE_CONVEX_URL for live mode" : "Connected to live Convex backend"}
     >
       <span
         className={cn(
@@ -178,7 +180,7 @@ function DataSourceBadge() {
           demo ? "bg-amber-500" : "animate-pulse bg-emerald-500",
         )}
       />
-      {demo ? "Demo data" : "Live"}
+      {demo ? "Demo" : "Live"}
     </Badge>
   );
 }
