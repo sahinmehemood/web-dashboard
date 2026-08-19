@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertTriangle,
   Boxes,
@@ -543,7 +543,7 @@ export default function HealthPage() {
             </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="stagger-children space-y-2">
           {crown.services.map((s) => {
             const tone = toneForStatus(s.status);
             const isExpanded = expandedService === s.name;
@@ -600,8 +600,17 @@ export default function HealthPage() {
                   )}
                 </button>
 
-                {isExpanded && (
-                  <div className="border-t border-border px-3 py-3 space-y-3">
+                <AnimatePresence initial={false}>
+                  {isExpanded && (
+                    <motion.div
+                      key="content"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="border-t border-border px-3 py-3 space-y-3">
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                       <div className="rounded-lg bg-secondary/60 px-2.5 py-1.5">
                         <div className="text-[10px] text-muted-foreground">PID</div>
@@ -653,7 +662,9 @@ export default function HealthPage() {
                       </Button>
                     </div>
                   </div>
-                )}
+                </motion.div>
+              )}
+            </AnimatePresence>
               </div>
             );
           })}

@@ -18,7 +18,7 @@ export function StatCard({
 }: {
   icon: LucideIcon;
   label: string;
-  value: string;
+  value: string | ReactNode;
   sub?: string;
   tone?: Tone;
   progress?: number;

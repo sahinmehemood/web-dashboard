@@ -29,7 +29,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toneBg, toneText } from "@/lib/status";
 import { DEMO_MODE } from "@/lib/env";
 import { useNow } from "@/hooks/use-settings";
-import { useActivity, useTelemetry } from "@/hooks/use-dashboard";
+import { useActivity, useTelemetry, useCrown } from "@/hooks/use-dashboard";
 import { useCommandPanel } from "@/components/dashboard/command-panel";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { isAnyDemo } from "@/hooks/use-dashboard";
@@ -160,6 +160,51 @@ function Notifications() {
   );
 }
 
+import {
+  Battery,
+  BatteryCharging,
+  BatteryFull,
+  BatteryLow,
+  BatteryMedium,
+  BatteryWarning,
+  Cpu,
+  Signal,
+} from "lucide-react";
+
+function QuickStatus() {
+  const { data: t } = useTelemetry();
+  const { data: crown } = useCrown();
+  const runningCount = crown.services.filter((s: { status: string }) => s.status === "run").length;
+  const totalCount = crown.services.length;
+
+  const batteryTone =
+    t.batteryPercent >= 60 ? "text-emerald-600 dark:text-emerald-400" :
+    t.batteryPercent >= 30 ? "text-amber-600 dark:text-amber-400" :
+    "text-red-600 dark:text-red-400";
+
+  return (
+    <div className="hidden items-center gap-3 rounded-lg border border-border bg-secondary/40 px-2.5 py-1 text-[11px] tabular-nums text-muted-foreground xl:flex">
+      <span className={cn("flex items-center gap-1", batteryTone)} title={`Battery: ${t.batteryPercent}%`}>
+        {t.batteryPercent >= 90 ? <BatteryFull className="size-3" /> :
+         t.batteryPercent >= 50 ? <BatteryMedium className="size-3" /> :
+         t.batteryPercent >= 20 ? <BatteryLow className="size-3" /> :
+         <BatteryWarning className="size-3" />}
+        {t.batteryPercent}%
+      </span>
+      <span className="text-border">|</span>
+      <span className="flex items-center gap-1" title={`CPU: ${t.cpuUsagePercent}%`}>
+        <Cpu className="size-3" />
+        {t.cpuUsagePercent}%
+      </span>
+      <span className="text-border">|</span>
+      <span className="flex items-center gap-1" title={`${runningCount}/${totalCount} services`}>
+        <Signal className="size-3" />
+        {runningCount}/{totalCount}
+      </span>
+    </div>
+  );
+}
+
 function DataSourceBadge() {
   const t = useTelemetry();
   const demo = isAnyDemo([t.isDemo]);
@@ -233,6 +278,8 @@ export function DashboardHeader() {
           <span className="size-1.5 rounded-full bg-emerald-500" />
           {formatClock(now)}
         </span>
+
+        <QuickStatus />
 
         <Button
           variant="ghost"

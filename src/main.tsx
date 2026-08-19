@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
 import { Loader2 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import React, { StrictMode, useEffect, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
@@ -124,6 +125,53 @@ function RouteSyncer() {
   return null;
 }
 
+/** Animated page wrapper — fades + slides on route change. */
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <motion.main
+        key={location.pathname}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -8 }}
+        transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="flex-1"
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Landing />} />
+          <Route path="/setup" element={<Setup />} />
+          <Route
+            path="/auth"
+            element={<AuthPage redirectAfterAuth="/dashboard" />}
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <RequireAuth>
+                <AppShell />
+              </RequireAuth>
+            }
+          >
+            <Route index element={<OverviewPage />} />
+            <Route path="crown" element={<CrownPage />} />
+            <Route path="providers" element={<ProvidersPage />} />
+            <Route path="crons" element={<CronsPage />} />
+            <Route path="activity" element={<ActivityPage />} />
+            <Route path="brain" element={<BrainPage />} />
+            <Route path="console" element={<ConsolePage />} />
+            <Route path="bots" element={<BotsPage />} />
+            <Route path="agents" element={<AgentsPage />} />
+            <Route path="health" element={<HealthPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </motion.main>
+    </AnimatePresence>
+  );
+}
+
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -136,35 +184,7 @@ createRoot(document.getElementById("root")!).render(
           <BrowserRouter>
             <RouteSyncer />
             <Suspense fallback={<RouteLoading />}>
-              <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/setup" element={<Setup />} />
-                <Route
-                  path="/auth"
-                  element={<AuthPage redirectAfterAuth="/dashboard" />}
-                />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <RequireAuth>
-                      <AppShell />
-                    </RequireAuth>
-                  }
-                >
-                  <Route index element={<OverviewPage />} />
-                  <Route path="crown" element={<CrownPage />} />
-                  <Route path="providers" element={<ProvidersPage />} />
-                  <Route path="crons" element={<CronsPage />} />
-                  <Route path="activity" element={<ActivityPage />} />
-                  <Route path="brain" element={<BrainPage />} />
-                  <Route path="console" element={<ConsolePage />} />
-                  <Route path="bots" element={<BotsPage />} />
-                  <Route path="agents" element={<AgentsPage />} />
-                  <Route path="health" element={<HealthPage />} />
-                  <Route path="settings" element={<SettingsPage />} />
-                </Route>
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <AnimatedRoutes />
             </Suspense>
           </BrowserRouter>
           <Toaster />

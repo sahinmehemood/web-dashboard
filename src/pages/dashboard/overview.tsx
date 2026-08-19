@@ -25,6 +25,7 @@ import { BadgeDot, toneBg, toneForStatus, type Tone } from "@/lib/status";
 import { Badge as UIBadge } from "@/components/ui/badge";
 import { CodeBlock } from "@/components/dashboard/code-block";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { AnimatedCounter } from "@/components/dashboard/animated-counter";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { MetricChart } from "@/components/dashboard/metric-chart";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
@@ -234,11 +235,11 @@ export default function OverviewPage() {
       </div>
 
       {/* Metric cards with sparklines */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
+      <div className="stagger-children grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
         <StatCard
           icon={Battery}
           label="Battery"
-          value={`${telemetry.batteryPercent}%`}
+          value={<><AnimatedCounter value={telemetry.batteryPercent} />%</>}
           sub={telemetry.batteryStatus}
           tone="success"
           progress={telemetry.batteryPercent}
@@ -248,7 +249,7 @@ export default function OverviewPage() {
         <StatCard
           icon={Cpu}
           label="CPU"
-          value={`${telemetry.cpuUsagePercent}%`}
+          value={<><AnimatedCounter value={telemetry.cpuUsagePercent} />%</>}
           sub={`${telemetry.cpuCores} cores · load ${telemetry.loadAvg1}`}
           tone="info"
           progress={telemetry.cpuUsagePercent}
@@ -258,7 +259,7 @@ export default function OverviewPage() {
         <StatCard
           icon={Activity}
           label="Memory"
-          value={`${Math.round(memPct)}%`}
+          value={<><AnimatedCounter value={Math.round(memPct)} />%</>}
           sub={`${formatMb(telemetry.memUsedMb)} / ${formatMb(telemetry.memTotalMb)}`}
           tone="info"
           progress={memPct}
@@ -268,7 +269,7 @@ export default function OverviewPage() {
         <StatCard
           icon={HardDrive}
           label="Storage"
-          value={`${Math.round(storPct)}%`}
+          value={<><AnimatedCounter value={Math.round(storPct)} />%</>}
           sub={`${formatGb(telemetry.storageUsedGb)} / ${formatGb(telemetry.storageTotalGb)}`}
           tone="warning"
           progress={storPct}
