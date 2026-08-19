@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/web-dashboard/logo.svg" />
+  <link rel="manifest" href="/web-dashboard/manifest.webmanifest" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Hermes — Command Dashboard</title>
+  <meta name="description" content="Real-time command dashboard for your Hermes AI agent. Monitor device health, track model performance, send remote commands." />
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem("hermes-theme");
+        var dark = stored === "dark" || (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        if (dark) document.documentElement.classList.add("dark");
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute("content", dark ? "#09090b" : "#ffffff");
+      } catch (e) {}
+    })();
+  </script>
+  <script type="module" crossorigin src="/web-dashboard/assets/index-DxnhGohE.js"></script>
+  <link rel="modulepreload" crossorigin href="/web-dashboard/assets/react-vendor-1w1OaRB6.js">
+  <link rel="modulepreload" crossorigin href="/web-dashboard/assets/framer-motion-ZhMQL9nK.js">
+  <link rel="modulepreload" crossorigin href="/web-dashboard/assets/radix-ui-82ro2o_i.js">
+  <link rel="stylesheet" crossorigin href="/web-dashboard/assets/index-uXVJ1k7k.css">
+</head>
+
+
+<body>
+  <div id="root"></div>
+</body>
+
+</html>

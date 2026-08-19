@@ -1,0 +1,1 @@
+import{j as s}from"./framer-motion-ZhMQL9nK.js";import{B as e}from"./badge-BuydbjUz.js";import{c as n}from"./utils-DanhxYoJ.js";import{b as i,s as m,a as p}from"./status-C301ZANd.js";function l({status:t,tone:a,className:r}){const o=a??i(t);return s.jsx(e,{variant:"outline",className:n("border-transparent font-medium capitalize",p[o],r),children:m(t)})}export{l as S};
