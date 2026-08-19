@@ -7,8 +7,14 @@
       // GitHub Pages SPA fallback: redirect unknown paths to the app root.
       // The app's client-side router takes over from there.
       (function () {
-        var base = "/web-dashboard/";
         var path = window.location.pathname;
+        // Hermes Atlas lives under /web-dashboard/hermesatlas/
+        if (path.indexOf("/web-dashboard/hermesatlas/") === 0) {
+          var sub = path.slice("/web-dashboard/hermesatlas/".length);
+          window.location.replace("/web-dashboard/hermesatlas/#" + (sub && sub !== "" ? sub : ""));
+          return;
+        }
+        var base = "/web-dashboard/";
         if (path.indexOf(base) === 0) path = path.slice(base.length);
         window.location.replace(base + (path && path !== "" ? "#" + path : ""));
       })();
