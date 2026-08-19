@@ -24,11 +24,12 @@ import {
   useBots,
   useCrons,
   useCrown,
+  useDeviceIdentity,
   useProviders,
   useTelemetry,
 } from "@/hooks/use-dashboard";
 import { useSettings, type Density, type Radius } from "@/hooks/use-settings";
-import { APP_VERSION, DDEV } from "@/lib/demo";
+import { APP_VERSION } from "@/lib/demo";
 import { formatDate } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
@@ -77,6 +78,7 @@ export default function SettingsPage() {
   } = useSettings();
   const { user } = useAuth();
   const telemetry = useTelemetry();
+  const device = useDeviceIdentity();
   const crown = useCrown();
   const providers = useProviders();
   const crons = useCrons();
@@ -316,14 +318,14 @@ export default function SettingsPage() {
 
           <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
             {[
-              { label: "Hostname", value: DDEV.hostname },
-              { label: "Model", value: DDEV.model },
-              { label: "OS", value: DDEV.os },
-              { label: "Android version", value: DDEV.androidVersion },
-              { label: "Architecture", value: DDEV.arch },
-              { label: "Kernel", value: DDEV.kernel },
-              { label: "Termux version", value: DDEV.termuxVersion },
-              { label: "Installed", value: formatDate(DDEV.installedAt) },
+              { label: "Hostname", value: device.data.hostname },
+              { label: "Model", value: device.data.model },
+              { label: "OS", value: device.data.os },
+              { label: "Android version", value: device.data.androidVersion },
+              { label: "Architecture", value: device.data.arch },
+              { label: "Kernel", value: device.data.kernel },
+              { label: "Termux version", value: device.data.termuxVersion },
+              { label: "Installed", value: formatDate(device.data.installedAt) },
             ].map((item) => (
               <div key={item.label}>
                 <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
