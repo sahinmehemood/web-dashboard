@@ -37,6 +37,7 @@ const GROUPS: { title: string; items: { label: string; keys: string[] }[] }[] = 
   {
     title: "Navigation",
     items: [
+      { label: "Jump to page", keys: ["1", "…", "0"] },
       { label: "Overview", keys: ["G", "O"] },
       { label: "Health", keys: ["G", "H"] },
       { label: "Activity", keys: ["G", "A"] },

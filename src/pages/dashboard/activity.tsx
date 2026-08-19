@@ -38,16 +38,18 @@ const LEVEL_STYLES: Record<ActivityLevel, string> = {
 };
 
 function downloadCsv(events: ActivityEvent[]) {
+  const escape = (value: unknown) =>
+    `"${String(value ?? "").replace(/"/g, '""')}"`;
   const header = ["Timestamp", "Type", "Title", "Detail", "Level"];
   const rows = events.map((e) => [
     new Date(e.timestamp).toISOString(),
     e.activityType,
     e.title,
-    (e.detail ?? "").replace(/"/g, '""'),
+    e.detail ?? "",
     e.level,
   ]);
   const csv = [header, ...rows]
-    .map((r) => r.map((c) => `"${c}"`).join(","))
+    .map((r) => r.map(escape).join(","))
     .join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);

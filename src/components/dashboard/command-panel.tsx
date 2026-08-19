@@ -68,29 +68,36 @@ const NAV_ITEMS: { label: string; href: string; icon: LucideIcon; shortcut: stri
   { label: "Settings", href: "/dashboard/settings", icon: Settings, shortcut: "0" },
 ];
 
-const QUICK_ACTIONS: { type: string; label: string; icon: LucideIcon; shortcut: string }[] = [
-  { type: "crown_status", label: "Crown status", icon: Crown, shortcut: "⌘1" },
-  { type: "restart_hermes", label: "Restart Hermes", icon: RefreshCw, shortcut: "⌘2" },
-  { type: "check_providers", label: "Check models", icon: Zap, shortcut: "⌘3" },
-  { type: "run_health", label: "Run StackGov", icon: Shield, shortcut: "⌘4" },
-  { type: "git_sync", label: "Git sync", icon: GitBranch, shortcut: "⌘5" },
-  { type: "list_crons", label: "List crons", icon: Calendar, shortcut: "⌘6" },
+const QUICK_ACTIONS: { type: string; label: string; icon: LucideIcon }[] = [
+  { type: "crown_status", label: "Crown status", icon: Crown },
+  { type: "restart_hermes", label: "Restart Hermes", icon: RefreshCw },
+  { type: "check_providers", label: "Check models", icon: Zap },
+  { type: "run_health", label: "Run StackGov", icon: Shield },
+  { type: "git_sync", label: "Git sync", icon: GitBranch },
+  { type: "list_crons", label: "List crons", icon: Calendar },
 ];
 
 export function CommandPanelProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const openPanel = useCallback(() => setOpen(true), []);
+  const { toggleTheme } = useTheme();
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      const key = event.key.toLowerCase();
+      if ((event.metaKey || event.ctrlKey) && key === "k") {
         event.preventDefault();
         setOpen((o) => !o);
+        return;
+      }
+      if ((event.metaKey || event.ctrlKey) && key === "t") {
+        event.preventDefault();
+        toggleTheme();
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [toggleTheme]);
 
   const value = useMemo(() => ({ open: openPanel }), [openPanel]);
 
@@ -167,7 +174,7 @@ function CommandPanel({
         <CommandSeparator />
 
         <CommandGroup heading="Quick commands">
-          {QUICK_ACTIONS.map(({ type, label, icon: Icon, shortcut }) => (
+          {QUICK_ACTIONS.map(({ type, label, icon: Icon }) => (
             <CommandItem
               key={type}
               onSelect={() => dispatch(type)}
@@ -179,7 +186,6 @@ function CommandPanel({
                 <Icon className="size-4 text-muted-foreground" />
               )}
               <span>{label}</span>
-              <CommandShortcut>{shortcut}</CommandShortcut>
             </CommandItem>
           ))}
         </CommandGroup>

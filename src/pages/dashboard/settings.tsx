@@ -43,6 +43,7 @@ const KEYBOARD_ROWS = [
   { label: "Open command center", shortcut: "⌘K" },
   { label: "Keyboard shortcuts", shortcut: "?" },
   { label: "Toggle theme", shortcut: "⌘T" },
+  { label: "Jump to page", shortcut: "1–0" },
   { label: "Close command center", shortcut: "Esc" },
   { label: "Go to page (g then key)", shortcut: "g h" },
 ];

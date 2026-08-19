@@ -19,6 +19,19 @@ const NAV_KEYS: Record<string, string> = {
   s: "/dashboard/settings",
 };
 
+const NUMBER_KEYS: Record<string, string> = {
+  "1": "/dashboard",
+  "2": "/dashboard/crown",
+  "3": "/dashboard/providers",
+  "4": "/dashboard/crons",
+  "5": "/dashboard/activity",
+  "6": "/dashboard/brain",
+  "7": "/dashboard/console",
+  "8": "/dashboard/bots",
+  "9": "/dashboard/health",
+  "0": "/dashboard/settings",
+};
+
 function NavigationShortcuts() {
   const navigate = useNavigate();
 
@@ -29,6 +42,8 @@ function NavigationShortcuts() {
       const target = e.target as HTMLElement | null;
       const tag = target?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable) return;
+      // Don't hijack keys while a dialog/palette is open (e.g. typing in the cmdk input).
+      if (document.querySelector('[role="dialog"]')) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
 
       if (pendingG && NAV_KEYS[e.key.toLowerCase()]) {
@@ -36,6 +51,11 @@ function NavigationShortcuts() {
         navigate(NAV_KEYS[e.key.toLowerCase()]);
         pendingG = false;
         if (gTimer) clearTimeout(gTimer);
+        return;
+      }
+      if (NUMBER_KEYS[e.key]) {
+        e.preventDefault();
+        navigate(NUMBER_KEYS[e.key]);
         return;
       }
       if (e.key.toLowerCase() === "g") {
