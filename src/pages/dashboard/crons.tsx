@@ -26,7 +26,7 @@ export default function CronsPage() {
   }, [crons, kindFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <PageHeader
         title="Crons"
         description="Scheduled jobs — brain automation, health checks, and vault sync."

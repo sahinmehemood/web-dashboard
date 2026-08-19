@@ -46,7 +46,7 @@ export function MetricChart({
       viewBox={`0 0 ${width} ${height}`}
       preserveAspectRatio="none"
       style={{ height }}
-      className={cn("w-full overflow-visible", className)}
+      className={cn("w-full", className)}
       aria-hidden
     >
       <defs>

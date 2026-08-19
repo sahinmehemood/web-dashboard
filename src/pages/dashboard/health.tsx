@@ -270,7 +270,7 @@ export default function HealthPage() {
   }, [activity, now]);
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <PageHeader
         title="Health"
         description="Derived system checks — uptime, resources, and service integrity."

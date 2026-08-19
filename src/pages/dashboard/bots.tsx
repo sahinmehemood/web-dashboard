@@ -57,7 +57,7 @@ export default function BotsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <PageHeader
         title="Bots"
         description="Telegram bot inventory — gateways, roles, connection state, and activity metrics."

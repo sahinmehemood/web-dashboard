@@ -57,7 +57,7 @@ export default function CrownPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <PageHeader
         title="Crown"
         description="runit supervisor — service supervision, lifecycle, and health."

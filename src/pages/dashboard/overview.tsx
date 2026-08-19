@@ -127,7 +127,7 @@ export default function OverviewPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <PageHeader
         title="Overview"
         description="Real-time health of your Hermes device, services, and model providers."

@@ -86,7 +86,7 @@ export default function SettingsPage() {
   const email = user?.email;
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <PageHeader
         title="Settings"
         description="Appearance, data source, and system information."
@@ -99,7 +99,7 @@ export default function SettingsPage() {
             Appearance
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="min-w-0 space-y-6">
           <div className="space-y-3">
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
               Theme
@@ -299,7 +299,7 @@ export default function SettingsPage() {
             About
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="min-w-0 space-y-6">
           <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2.5">
             <span className="text-sm">App version</span>
             <Badge variant="outline" className="font-mono">

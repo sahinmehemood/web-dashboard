@@ -77,7 +77,7 @@ export default function BrainPage() {
   }, [brain]);
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <PageHeader
         title="Brain"
         description="NOUS — your second brain vault: notes, sources, and knowledge automations."

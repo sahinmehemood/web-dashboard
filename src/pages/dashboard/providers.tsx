@@ -52,7 +52,7 @@ export default function ProvidersPage() {
   ).length;
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <PageHeader
         title="Providers"
         description="API providers and model routing health — latency, status, and rate limits."

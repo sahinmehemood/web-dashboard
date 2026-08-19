@@ -93,7 +93,7 @@ export default function ActivityPage() {
   const warnings = activity.filter((e) => e.level === "warning").length;
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <PageHeader
         title="Activity"
         description="Live stream of every event handled by your Hermes agent."

@@ -176,7 +176,7 @@ export default function AgentsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <PageHeader
         title="Agents"
         description="Hermes agent instances — state, bot connection, resource usage, and activity."
