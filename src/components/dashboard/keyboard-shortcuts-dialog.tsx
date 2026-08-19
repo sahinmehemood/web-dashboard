@@ -39,6 +39,7 @@ const GROUPS: { title: string; items: { label: string; keys: string[] }[] }[] = 
       { label: "Providers", keys: ["G", "P"] },
       { label: "Crons", keys: ["G", "R"] },
       { label: "Activity", keys: ["G", "A"] },
+      { label: "Agents", keys: ["G", "E"] },
       { label: "Brain", keys: ["G", "B"] },
       { label: "Console", keys: ["G", "N"] },
       { label: "Bots", keys: ["G", "T"] },

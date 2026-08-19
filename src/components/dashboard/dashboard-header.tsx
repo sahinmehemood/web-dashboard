@@ -51,6 +51,7 @@ const TITLES: Record<string, string> = {
   "/dashboard/providers": "Providers",
   "/dashboard/crons": "Crons",
   "/dashboard/activity": "Activity",
+  "/dashboard/agents": "Agents",
   "/dashboard/brain": "Brain",
   "/dashboard/console": "Console",
   "/dashboard/bots": "Bots",

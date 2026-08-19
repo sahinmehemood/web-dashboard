@@ -23,6 +23,10 @@ export interface CrownService {
   status: string;
   pid?: number;
   uptime?: string;
+  memoryMb?: number;
+  cpuPercent?: number;
+  restartCount?: number;
+  logTail?: string[];
 }
 
 export interface CrownHealth {
@@ -87,6 +91,24 @@ export interface TelegramBot {
   status: string;
   apiPort?: number;
   hermesHome?: string;
+  messagesHandled?: number;
+  errorsToday?: number;
+  lastSeenAt?: number;
+  avgResponseMs?: number;
+}
+
+export interface AgentInstance {
+  deviceId: string;
+  agentId: string;
+  name: string;
+  state: "active" | "idle" | "crashed";
+  connectedBot: string;
+  servicePid?: number;
+  uptimeSeconds: number;
+  messagesHandled: number;
+  lastActiveAt: number;
+  memoryMb: number;
+  cpuPercent: number;
 }
 
 export type ActivityLevel = "info" | "success" | "warning" | "error";
@@ -152,13 +174,13 @@ export const DC: CrownHealth = {
   runsvdirCount: 1,
   orphans: 0,
   services: [
-    { name: "bot", status: "run", pid: 25899, uptime: "3d 14h" },
-    { name: "bot2", status: "run", pid: 26104, uptime: "3d 14h" },
-    { name: "web", status: "run", pid: 26210, uptime: "3d 14h" },
-    { name: "search", status: "run", pid: 26300, uptime: "3d 14h" },
-    { name: "tunnel", status: "run", pid: 26400, uptime: "2d 8h" },
-    { name: "proxy", status: "run", pid: 26500, uptime: "3d 14h" },
-    { name: "scraper", status: "run", pid: 26600, uptime: "3d 14h" },
+    { name: "bot", status: "run", pid: 25899, uptime: "3d 14h", memoryMb: 186, cpuPercent: 2.1, restartCount: 1, logTail: ["[INFO] Gateway session active", "[INFO] Processing message from chat 8387179252", "[INFO] Model router: tencent/hy3:free (kilocode)"] },
+    { name: "bot2", status: "run", pid: 26104, uptime: "3d 14h", memoryMb: 142, cpuPercent: 0.8, restartCount: 0, logTail: ["[INFO] Second gateway listening on :8643", "[INFO] Session idle, awaiting messages"] },
+    { name: "web", status: "run", pid: 26210, uptime: "3d 14h", memoryMb: 234, cpuPercent: 1.4, restartCount: 0, logTail: ["[INFO] Dashboard serving on :9119", "[INFO] 12 active WebSocket connections"] },
+    { name: "search", status: "run", pid: 26300, uptime: "3d 14h", memoryMb: 312, cpuPercent: 3.2, restartCount: 2, logTail: ["[INFO] SearXNG ready on :8888", "[INFO] Query cache: 847 entries"] },
+    { name: "tunnel", status: "run", pid: 26400, uptime: "2d 8h", memoryMb: 28, cpuPercent: 0.1, restartCount: 3, logTail: ["[INFO] Serveo tunnel established", "[INFO] Forwarding localhost:9119 → serveo.net"] },
+    { name: "proxy", status: "run", pid: 26500, uptime: "3d 14h", memoryMb: 45, cpuPercent: 0.3, restartCount: 0, logTail: ["[INFO] Dashboard proxy :9120 → :9119", "[INFO] SSL termination active"] },
+    { name: "scraper", status: "run", pid: 26600, uptime: "3d 14h", memoryMb: 178, cpuPercent: 1.7, restartCount: 1, logTail: ["[INFO] Scraper service on :8777", "[INFO] Queue: 0 pending, 142 completed today"] },
   ],
 };
 
@@ -360,6 +382,10 @@ export const DBT: TelegramBot[] = [
     role: "main_gateway",
     status: "live",
     apiPort: 8642,
+    messagesHandled: 1847,
+    errorsToday: 2,
+    lastSeenAt: Date.now() - 60000,
+    avgResponseMs: 1240,
   },
   {
     deviceId: DID,
@@ -368,6 +394,10 @@ export const DBT: TelegramBot[] = [
     role: "second_gateway",
     status: "live",
     apiPort: 8643,
+    messagesHandled: 423,
+    errorsToday: 0,
+    lastSeenAt: Date.now() - 300000,
+    avgResponseMs: 890,
   },
   {
     deviceId: DID,
@@ -375,6 +405,10 @@ export const DBT: TelegramBot[] = [
     username: "Alerts17bot",
     role: "alerts",
     status: "live",
+    messagesHandled: 89,
+    errorsToday: 0,
+    lastSeenAt: Date.now() - 1800000,
+    avgResponseMs: 320,
   },
   {
     deviceId: DID,
@@ -382,6 +416,63 @@ export const DBT: TelegramBot[] = [
     username: "Cristhehdbot",
     role: "legacy",
     status: "dead",
+    messagesHandled: 0,
+    errorsToday: 12,
+    lastSeenAt: Date.now() - 86400000,
+    avgResponseMs: 0,
+  },
+];
+
+export const DAG: AgentInstance[] = [
+  {
+    deviceId: DID,
+    agentId: "agent-main",
+    name: "Main Agent",
+    state: "active",
+    connectedBot: "hermesthehdbot",
+    servicePid: 25899,
+    uptimeSeconds: 302400,
+    messagesHandled: 1847,
+    lastActiveAt: Date.now() - 60000,
+    memoryMb: 186,
+    cpuPercent: 2.1,
+  },
+  {
+    deviceId: DID,
+    agentId: "agent-secondary",
+    name: "Secondary Agent",
+    state: "idle",
+    connectedBot: "Hermesagenths_bot",
+    servicePid: 26104,
+    uptimeSeconds: 302400,
+    messagesHandled: 423,
+    lastActiveAt: Date.now() - 300000,
+    memoryMb: 142,
+    cpuPercent: 0.8,
+  },
+  {
+    deviceId: DID,
+    agentId: "agent-alerts",
+    name: "Alert Monitor",
+    state: "active",
+    connectedBot: "Alerts17bot",
+    uptimeSeconds: 302400,
+    messagesHandled: 89,
+    lastActiveAt: Date.now() - 1800000,
+    memoryMb: 64,
+    cpuPercent: 0.3,
+  },
+  {
+    deviceId: DID,
+    agentId: "agent-legacy",
+    name: "Legacy Agent",
+    state: "crashed",
+    connectedBot: "Cristhehdbot",
+    uptimeSeconds: 0,
+    messagesHandled: 0,
+    lastActiveAt: Date.now() - 86400000,
+    memoryMb: 0,
+    cpuPercent: 0,
   },
 ];
 

@@ -1,11 +1,22 @@
 import { useMemo, useState } from "react";
-import { Bot } from "lucide-react";
+import { toast } from "sonner";
+import {
+  Activity,
+  AlertTriangle,
+  Bot,
+  Clock,
+  RefreshCw,
+  Timer,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { BadgeDot } from "@/lib/status";
 import { DataTable } from "@/components/dashboard/data-table";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { StatusBadge } from "@/components/dashboard/status-badge";
-import { useBots } from "@/hooks/use-dashboard";
+import { useBots, useSendCommand } from "@/hooks/use-dashboard";
+import { DID } from "@/lib/demo";
+import { timeAgo } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 import type { TelegramBot } from "@/lib/demo";
 
@@ -19,7 +30,9 @@ const ROLE_FILTERS: { value: string; label: string }[] = [
 
 export default function BotsPage() {
   const { data: bots } = useBots();
+  const send = useSendCommand();
   const [roleFilter, setRoleFilter] = useState("all");
+  const now = Date.now();
 
   const filtered = useMemo(() => {
     if (roleFilter === "all") return bots;
@@ -27,18 +40,34 @@ export default function BotsPage() {
   }, [bots, roleFilter]);
 
   const live = bots.filter((b) => b.status === "live").length;
+  const totalMessages = bots.reduce((s, b) => s + (b.messagesHandled ?? 0), 0);
+  const totalErrors = bots.reduce((s, b) => s + (b.errorsToday ?? 0), 0);
+
+  const handleRestart = async (username: string) => {
+    try {
+      await send({ deviceId: DID, commandType: "restart_hermes" });
+      toast.success("Restart dispatched", {
+        description: `Restart command sent for @${username}.`,
+      });
+    } catch (error) {
+      toast.error("Restart failed", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Bots"
-        description="Telegram bot inventory — gateways, roles, and connection state."
+        description="Telegram bot inventory — gateways, roles, connection state, and activity metrics."
       >
         <span className="text-xs text-muted-foreground">
           {live}/{bots.length} live
         </span>
       </PageHeader>
 
+      {/* Summary chips */}
       <div className="flex flex-wrap gap-2">
         {[
           { label: "Bots", value: String(bots.length) },
@@ -49,11 +78,26 @@ export default function BotsPage() {
               bots.filter((b) => b.role.includes("gateway")).length,
             ),
           },
+          {
+            label: "Messages",
+            value: totalMessages.toLocaleString(),
+            icon: Activity,
+          },
+          {
+            label: "Errors",
+            value: String(totalErrors),
+            icon: AlertTriangle,
+            warn: totalErrors > 0,
+          },
         ].map((item) => (
           <span
             key={item.label}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground"
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs",
+              item.warn ? "border-amber-500/30 text-amber-700 dark:text-amber-400" : "text-muted-foreground",
+            )}
           >
+            {item.icon && <item.icon className="size-3" />}
             <span className="font-medium text-foreground">{item.value}</span>
             {item.label}
           </span>
@@ -105,7 +149,14 @@ export default function BotsPage() {
                       tone={b.status === "live" ? "success" : "danger"}
                       pulse={b.status === "live"}
                     />
-                    <span className="text-sm font-medium">@{b.username}</span>
+                    <div className="min-w-0">
+                      <span className="text-sm font-medium">@{b.username}</span>
+                      {b.lastSeenAt && (
+                        <div className="text-[11px] text-muted-foreground">
+                          Last seen {timeAgo(b.lastSeenAt, now)}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ),
               },
@@ -120,21 +171,57 @@ export default function BotsPage() {
                 ),
               },
               {
-                key: "botId",
-                header: "ID",
+                key: "messagesHandled",
+                header: "Messages",
+                sortable: true,
+                sortValue: (b) => b.messagesHandled ?? 0,
                 headerClassName: "hidden sm:table-cell",
                 className: "hidden sm:table-cell",
                 render: (b) => (
-                  <span className="font-mono text-xs text-muted-foreground">
-                    {b.botId}
+                  <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                    {(b.messagesHandled ?? 0).toLocaleString()}
+                  </span>
+                ),
+              },
+              {
+                key: "errorsToday",
+                header: "Errors",
+                sortable: true,
+                sortValue: (b) => b.errorsToday ?? 0,
+                headerClassName: "hidden md:table-cell",
+                className: "hidden md:table-cell",
+                render: (b) => {
+                  const errors = b.errorsToday ?? 0;
+                  return (
+                    <span
+                      className={cn(
+                        "font-mono text-xs tabular-nums",
+                        errors > 0 ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground",
+                      )}
+                    >
+                      {errors}
+                    </span>
+                  );
+                },
+              },
+              {
+                key: "avgResponseMs",
+                header: "Avg ms",
+                sortable: true,
+                sortValue: (b) => b.avgResponseMs ?? 0,
+                headerClassName: "hidden lg:table-cell",
+                className: "hidden lg:table-cell",
+                render: (b) => (
+                  <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                    {b.avgResponseMs ? `${b.avgResponseMs}ms` : "—"}
                   </span>
                 ),
               },
               {
                 key: "apiPort",
                 header: "Port",
-                headerClassName: "hidden md:table-cell",
-                className: "hidden md:table-cell",
+                headerClassName: "hidden lg:table-cell",
+                className: "hidden lg:table-cell",
                 render: (b) => (
                   <span className="font-mono text-xs text-muted-foreground">
                     {b.apiPort ?? "—"}
@@ -149,8 +236,17 @@ export default function BotsPage() {
                 sortable: true,
                 sortValue: (b) => b.status,
                 render: (b) => (
-                  <div className="flex justify-end">
+                  <div className="flex items-center justify-end gap-1.5">
                     <StatusBadge status={b.status} />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-6"
+                      onClick={() => handleRestart(b.username)}
+                      title={`Restart @${b.username}`}
+                    >
+                      <RefreshCw className="size-3" />
+                    </Button>
                   </div>
                 ),
               },

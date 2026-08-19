@@ -24,7 +24,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useBots, useCrons, useCrown, useProviders } from "@/hooks/use-dashboard";
+import { useAgents, useBots, useCrons, useCrown, useProviders } from "@/hooks/use-dashboard";
 import { cn } from "@/lib/utils";
 import { toneText, type Tone } from "@/lib/status";
 import logo from "@/assets/logo.svg";
@@ -43,6 +43,7 @@ function useNavBadges(): Record<string, { text: string; tone: Tone }> {
   const { data: providers } = useProviders();
   const { data: bots } = useBots();
   const { data: crons } = useCrons();
+  const { data: agents } = useAgents();
 
   const up = crown.services.filter((s) => s.status === "run").length;
   const healthy = providers.filter((p) =>
@@ -50,6 +51,8 @@ function useNavBadges(): Record<string, { text: string; tone: Tone }> {
   ).length;
   const live = bots.filter((b) => b.status === "live").length;
   const enabled = crons.filter((c) => c.enabled).length;
+  const activeAgents = agents.filter((a) => a.state === "active").length;
+  const crashed = agents.filter((a) => a.state === "crashed").length;
 
   return {
     crown: {
@@ -67,6 +70,10 @@ function useNavBadges(): Record<string, { text: string; tone: Tone }> {
     bots: {
       text: `${live}/${bots.length}`,
       tone: live === bots.length ? "success" : "danger",
+    },
+    agents: {
+      text: `${activeAgents}/${agents.length}`,
+      tone: crashed > 0 ? "danger" : activeAgents === agents.length ? "success" : "warning",
     },
   };
 }
@@ -88,6 +95,7 @@ const NAV_GROUPS: {
   {
     label: "Intelligence",
     items: [
+      { title: "Agents", href: "/dashboard/agents", icon: Bot, badgeKey: "agents" },
       { title: "Brain", href: "/dashboard/brain", icon: Brain },
       { title: "Console", href: "/dashboard/console", icon: Terminal },
     ],

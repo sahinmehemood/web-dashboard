@@ -65,6 +65,7 @@ const NAV_ITEMS: { label: string; href: string; icon: LucideIcon; shortcut: stri
   { label: "Providers", href: "/dashboard/providers", icon: Zap, shortcut: "3" },
   { label: "Crons", href: "/dashboard/crons", icon: Timer, shortcut: "4" },
   { label: "Activity", href: "/dashboard/activity", icon: History, shortcut: "5" },
+  { label: "Agents", href: "/dashboard/agents", icon: Bot, shortcut: "" },
   { label: "Brain", href: "/dashboard/brain", icon: Brain, shortcut: "6" },
   { label: "Console", href: "/dashboard/console", icon: Terminal, shortcut: "7" },
   { label: "Bots", href: "/dashboard/bots", icon: Bot, shortcut: "8" },

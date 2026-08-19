@@ -334,3 +334,11 @@ export const updateCommandResult = mutation({
     });
   },
 });
+
+// ── Agents ──────────────────────────────────────────────────────
+export const agents = query({
+  args: { deviceId: v.string() },
+  handler: async () => {
+    return null;
+  },
+});

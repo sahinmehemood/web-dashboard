@@ -12,6 +12,7 @@ const NAV_KEYS: Record<string, string> = {
   p: "/dashboard/providers",
   r: "/dashboard/crons",
   a: "/dashboard/activity",
+  e: "/dashboard/agents",
   b: "/dashboard/brain",
   n: "/dashboard/console",
   t: "/dashboard/bots",

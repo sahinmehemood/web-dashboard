@@ -1,18 +1,27 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   AlertTriangle,
   Boxes,
   Brain,
   CheckCircle2,
-  Crown,
+  ChevronDown,
+  ChevronRight,
+  Clock,
   Cpu,
+  Crown,
+  FileText,
+  MemoryStick,
+  RefreshCw,
   ShieldAlert,
   Signal,
   Zap,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { BadgeDot, toneBg, toneForStatus, type Tone } from "@/lib/status";
+import { CodeBlock } from "@/components/dashboard/code-block";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { PageHeader } from "@/components/dashboard/page-header";
 import {
@@ -20,8 +29,10 @@ import {
   useCrons,
   useCrown,
   useProviders,
+  useSendCommand,
   useTelemetry,
 } from "@/hooks/use-dashboard";
+import { DID } from "@/lib/demo";
 import { formatMb, formatUptime, pctUsed, timeAgo } from "@/lib/formatters";
 import { makeUptimeHistory, uptimePercent, type UptimeTone } from "@/lib/history";
 import { cn } from "@/lib/utils";
@@ -72,6 +83,21 @@ export default function HealthPage() {
   const providers = useProviders().data;
   const crons = useCrons().data;
   const activity = useActivity(30).data;
+  const send = useSendCommand();
+  const [expandedService, setExpandedService] = useState<string | null>(null);
+
+  const handleRestartService = async (serviceName: string) => {
+    try {
+      await send({ deviceId: DID, commandType: "restart_hermes" });
+      toast.success("Restart dispatched", {
+        description: `Restart command sent for ${serviceName}.`,
+      });
+    } catch (error) {
+      toast.error("Restart failed", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  };
 
   const uptimeSeries = useMemo(() => makeUptimeHistory(42, 90), []);
   const uptime = useMemo(() => uptimePercent(uptimeSeries), [uptimeSeries]);
@@ -507,58 +533,130 @@ export default function HealthPage() {
         </CardContent>
       </Card>
 
-      {/* Service status table */}
+      {/* Service detail cards */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-sm font-semibold">
             <Crown className="size-4 text-muted-foreground" />
-            Crown service status
+            Crown services
+            <span className="ml-auto text-xs font-normal text-muted-foreground">
+              {crown.services.filter((s) => s.status === "run").length}/{crown.services.length} running
+            </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-muted-foreground">
-                  <th className="px-4 py-2.5 font-medium">Service</th>
-                  <th className="hidden px-4 py-2.5 font-medium sm:table-cell">PID</th>
-                  <th className="hidden px-4 py-2.5 font-medium md:table-cell">Uptime</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {crown.services.map((s) => {
-                  const tone = toneForStatus(s.status);
-                  return (
-                    <tr key={s.name} className="border-b border-border/60 last:border-0">
-                      <td className="px-4 py-2.5">
-                        <div className="flex items-center gap-2">
-                          <BadgeDot tone={tone} pulse={s.status === "run"} />
-                          <span className="font-mono text-xs font-medium">{s.name}</span>
+        <CardContent className="space-y-2">
+          {crown.services.map((s) => {
+            const tone = toneForStatus(s.status);
+            const isExpanded = expandedService === s.name;
+            return (
+              <div key={s.name} className="rounded-lg border border-border">
+                <button
+                  type="button"
+                  onClick={() => setExpandedService(isExpanded ? null : s.name)}
+                  className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-muted/40 cursor-pointer"
+                >
+                  <BadgeDot tone={tone} pulse={s.status === "run"} />
+                  <span className="font-mono text-sm font-medium">{s.name}</span>
+                  {s.pid && (
+                    <span className="hidden font-mono text-xs text-muted-foreground sm:inline">
+                      PID {s.pid}
+                    </span>
+                  )}
+                  {s.uptime && (
+                    <span className="hidden text-xs text-muted-foreground md:inline">
+                      {s.uptime}
+                    </span>
+                  )}
+                  {s.memoryMb != null && (
+                    <span className="hidden items-center gap-1 text-xs text-muted-foreground lg:inline">
+                      <MemoryStick className="size-3" />
+                      {s.memoryMb}MB
+                    </span>
+                  )}
+                  {s.cpuPercent != null && (
+                    <span className="hidden items-center gap-1 text-xs text-muted-foreground lg:inline">
+                      <Cpu className="size-3" />
+                      {s.cpuPercent.toFixed(1)}%
+                    </span>
+                  )}
+                  {s.restartCount != null && s.restartCount > 0 && (
+                    <span className="hidden items-center gap-1 text-xs text-amber-600 dark:text-amber-400 lg:inline">
+                      <RefreshCw className="size-3" />
+                      {s.restartCount}
+                    </span>
+                  )}
+                  <span
+                    className={cn(
+                      "ml-auto inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium capitalize",
+                      toneBg[tone],
+                    )}
+                  >
+                    {s.status}
+                  </span>
+                  {isExpanded ? (
+                    <ChevronDown className="size-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronRight className="size-4 text-muted-foreground" />
+                  )}
+                </button>
+
+                {isExpanded && (
+                  <div className="border-t border-border px-3 py-3 space-y-3">
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                      <div className="rounded-lg bg-secondary/60 px-2.5 py-1.5">
+                        <div className="text-[10px] text-muted-foreground">PID</div>
+                        <div className="text-sm font-bold tabular-nums font-mono">{s.pid ?? "—"}</div>
+                      </div>
+                      <div className="rounded-lg bg-secondary/60 px-2.5 py-1.5">
+                        <div className="text-[10px] text-muted-foreground">Uptime</div>
+                        <div className="text-sm font-bold tabular-nums">{s.uptime ?? "—"}</div>
+                      </div>
+                      <div className="rounded-lg bg-secondary/60 px-2.5 py-1.5">
+                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                          <MemoryStick className="size-2.5" /> Memory
                         </div>
-                      </td>
-                      <td className="hidden px-4 py-2.5 font-mono text-xs text-muted-foreground sm:table-cell">
-                        {s.pid ?? "—"}
-                      </td>
-                      <td className="hidden px-4 py-2.5 text-xs text-muted-foreground md:table-cell">
-                        {s.uptime ?? "—"}
-                      </td>
-                      <td className="px-4 py-2.5 text-right">
-                        <span
-                          className={cn(
-                            "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium capitalize",
-                            toneBg[tone],
-                          )}
-                        >
-                          {s.status}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        <div className="text-sm font-bold tabular-nums">{s.memoryMb != null ? `${s.memoryMb}MB` : "—"}</div>
+                      </div>
+                      <div className="rounded-lg bg-secondary/60 px-2.5 py-1.5">
+                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                          <Cpu className="size-2.5" /> CPU
+                        </div>
+                        <div className="text-sm font-bold tabular-nums">{s.cpuPercent != null ? `${s.cpuPercent.toFixed(1)}%` : "—"}</div>
+                      </div>
+                    </div>
+
+                    {s.restartCount != null && s.restartCount > 0 && (
+                      <div className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400">
+                        <RefreshCw className="size-3" />
+                        {s.restartCount} restart{s.restartCount !== 1 ? "s" : ""} since boot
+                      </div>
+                    )}
+
+                    {s.logTail && s.logTail.length > 0 && (
+                      <div>
+                        <div className="mb-1 flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
+                          <FileText className="size-3" />
+                          Recent logs
+                        </div>
+                        <CodeBlock text={s.logTail.join("\n")} />
+                      </div>
+                    )}
+
+                    <div className="flex justify-end">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleRestartService(s.name)}
+                      >
+                        <RefreshCw className="size-3.5" />
+                        Restart service
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </CardContent>
       </Card>
     </div>

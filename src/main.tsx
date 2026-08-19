@@ -28,6 +28,7 @@ const ActivityPage = lazy(() => import("./pages/dashboard/activity.tsx"));
 const BrainPage = lazy(() => import("./pages/dashboard/brain.tsx"));
 const ConsolePage = lazy(() => import("./pages/dashboard/console.tsx"));
 const BotsPage = lazy(() => import("./pages/dashboard/bots.tsx"));
+const AgentsPage = lazy(() => import("./pages/dashboard/agents.tsx"));
 const HealthPage = lazy(() => import("./pages/dashboard/health.tsx"));
 const SettingsPage = lazy(() => import("./pages/dashboard/settings.tsx"));
 
@@ -158,6 +159,7 @@ createRoot(document.getElementById("root")!).render(
                   <Route path="brain" element={<BrainPage />} />
                   <Route path="console" element={<ConsolePage />} />
                   <Route path="bots" element={<BotsPage />} />
+                  <Route path="agents" element={<AgentsPage />} />
                   <Route path="health" element={<HealthPage />} />
                   <Route path="settings" element={<SettingsPage />} />
                 </Route>

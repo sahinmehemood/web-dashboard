@@ -1,8 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { DID, DA, DBR, DC, DCR, DP, DBT, DT } from "@/lib/demo";
+import { DID, DA, DAG, DBR, DC, DCR, DP, DBT, DT } from "@/lib/demo";
 import type {
   ActivityEvent,
+  AgentInstance,
   ApiProvider,
   BrainStats,
   CronJob,
@@ -66,6 +67,14 @@ export function useActivity(limit = 12) {
   });
   return { data: live ?? DA, isDemo: live == null } as {
     data: ActivityEvent[];
+    isDemo: boolean;
+  };
+}
+
+export function useAgents() {
+  const live = useQuery(api.dashboard.agents, { deviceId: DID });
+  return { data: live ?? DAG, isDemo: live == null } as {
+    data: AgentInstance[];
     isDemo: boolean;
   };
 }
